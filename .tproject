@@ -7,5 +7,9 @@
     </platforms>
     <package>
         <blacklist/>
+        <resFallback autoGen="true"/>
+        <subProjects>
+            <tizenProject project="mHealthMonitorService" style="native main"/>
+        </subProjects>
     </package>
 </tproject>

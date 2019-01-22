@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns:tizen="http://tizen.org/ns/widgets" xmlns="http://www.w3.org/ns/widgets" id="http://yourdomain/mHealthMonitor" version="1.0.0" viewmodes="maximized">
+    <access origin="*" subdomains="true"></access>
+    <tizen:application id="6iuVFqoQsU.mHealthMonitor" package="6iuVFqoQsU" required_version="2.3.1"/>
+    <content src="index.html"/>
+    <feature name="http://tizen.org/feature/screen.size.all"/>
+    <feature name="http://tizen.org/feature/sensor.pedometer"/>
+    <feature name="http://tizen.org/feature/sensor.sleep_monitor"/>
+    <feature name="http://tizen.org/feature/sensor.heart_rate_monitor"/>
+    <icon src="icon.png"/>
+    <name>mHealth Monitor</name>
+    <tizen:privilege name="http://tizen.org/privilege/alarm.get"/>
+    <tizen:privilege name="http://tizen.org/privilege/alarm.set"/>
+    <tizen:privilege name="http://tizen.org/privilege/location"/>
+    <tizen:privilege name="http://tizen.org/privilege/healthinfo"/>
+    <tizen:privilege name="http://tizen.org/privilege/internet"/>
+    <tizen:profile name="wearable"/>
+    <tizen:setting background-support="disable" encryption="disable" hwkey-event="enable"/>
+</widget>
