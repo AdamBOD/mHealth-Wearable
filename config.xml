@@ -5,10 +5,12 @@
     <content src="index.html"/>
     <feature name="http://tizen.org/feature/screen.size.all"/>
     <icon src="icon.png"/>
+    <tizen:metadata key="AccessoryServicesLocation" value="res/xml/serviceprofile.xml"/>
     <name>mHealth Monitor</name>
     <tizen:privilege name="http://tizen.org/privilege/location"/>
     <tizen:privilege name="http://tizen.org/privilege/healthinfo"/>
     <tizen:privilege name="http://tizen.org/privilege/internet"/>
     <tizen:profile name="wearable"/>
+    <tizen:provides-appdefined-privilege name="http://developer.samsung.com/tizen/privilege/accessoryprotocol"/>
     <tizen:setting background-support="disable" encryption="disable" hwkey-event="enable"/>
 </widget>
