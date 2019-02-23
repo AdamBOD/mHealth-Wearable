@@ -56,7 +56,7 @@ var SAAgent, SASocket, connectionListener
 connectionListener = {
 	    /* Remote peer agent (Consumer) requests a service (Provider) connection */
 	    onrequest: function (peerAgent) {
-	    	window.alert("Attempted Connection")
+	    	window.alert(peerAgent.appName)
 
 	        //createHTML("peerAgent: peerAgent.appName<br />" +
 	                    //"is requsting Service conncetion...");
