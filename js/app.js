@@ -15,7 +15,7 @@
  */
 
 /* global console, define */
-
+/*
 /**
  * App module.
  *
@@ -23,7 +23,7 @@
  * @requires {@link views/init}
  * @namespace app
  */
-
+/*
 define({
     name: 'app',
     requires: [
@@ -31,7 +31,6 @@ define({
     ],
     def: function appInit() {
         'use strict';
-
         console.log('app::def');
 
         /**
@@ -40,6 +39,7 @@ define({
          * @memberof app
          * @public
          */
+/*
         function init() {
             console.log('app::init');
         }
@@ -48,7 +48,7 @@ define({
             init: init
         };
     }
-});
+});*/
 
 var stepCount, stepStatus, speed, walkingFrequency;
 var SAAgent, SASocket, connectionListener
@@ -56,17 +56,20 @@ var SAAgent, SASocket, connectionListener
 connectionListener = {
 	    /* Remote peer agent (Consumer) requests a service (Provider) connection */
 	    onrequest: function (peerAgent) {
+	    	window.alert("Attempted Connection")
 
 	        //createHTML("peerAgent: peerAgent.appName<br />" +
 	                    //"is requsting Service conncetion...");
 
 	        /* Check connecting peer by appName*/
-	        if (peerAgent.appName === "WatchService") {
+	        if (peerAgent.appName === "mHealthService") {
 	            SAAgent.acceptServiceConnectionRequest(peerAgent);
+	            window.alert("Connected to phone");
 	            //createHTML("Service connection request accepted.");
 
 	        } else {
 	            SAAgent.rejectServiceConnectionRequest(peerAgent);
+	            window.alert("Rejected connection to phone");
 	            //createHTML("Service connection request rejected.");
 
 	        }
@@ -136,11 +139,11 @@ connectionListener = {
 
 function requestOnSuccess (agents) {
     var i = 0;
-
     for (i; i < agents.length; i += 1) {
         if (agents[i].role === "PROVIDER") {
             //createHTML("Service Provider found!<br />" +
                         //"Name: " +  agents[i].name);
+        	window.alert("Service Provider found! " + "Name: " +  agents[i].name);
             SAAgent = agents[i];
             break;
         }
@@ -151,6 +154,7 @@ function requestOnSuccess (agents) {
 }
 
 function requestOnError (e) {
+	window.alert ("requestSAAgent Error " + "Error name : " + e.name + " " + "Error message : " + e.message)
     //createHTML("requestSAAgent Error" +
                 //"Error name : " + e.name + "<br />" +
                 //"Error message : " + e.message);

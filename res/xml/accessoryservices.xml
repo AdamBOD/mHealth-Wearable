@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
-    <application name="mHealth" >
+    <application name="mHealthWatch" >
         <serviceProfile
             id="/com/example/mHealth/WatchService"
-            name="mHealthMonitor"
+            name="mHealthService"
             autoLaunchAppId="6iuVFqoQsU.mHealthMonitor"
             role="provider"
             version="1.0"
