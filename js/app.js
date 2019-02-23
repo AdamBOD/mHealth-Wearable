@@ -57,17 +57,17 @@ connectionListener = {
 	    /* Remote peer agent (Consumer) requests a service (Provider) connection */
 	    onrequest: function (peerAgent) {
 
-	        createHTML("peerAgent: peerAgent.appName<br />" +
-	                    "is requsting Service conncetion...");
+	        //createHTML("peerAgent: peerAgent.appName<br />" +
+	                    //"is requsting Service conncetion...");
 
 	        /* Check connecting peer by appName*/
-	        if (peerAgent.appName === "HelloAccessoryConsumer") {
+	        if (peerAgent.appName === "WatchService") {
 	            SAAgent.acceptServiceConnectionRequest(peerAgent);
-	            createHTML("Service connection request accepted.");
+	            //createHTML("Service connection request accepted.");
 
 	        } else {
 	            SAAgent.rejectServiceConnectionRequest(peerAgent);
-	            createHTML("Service connection request rejected.");
+	            //createHTML("Service connection request rejected.");
 
 	        }
 	    },
@@ -77,13 +77,13 @@ connectionListener = {
 	        var onConnectionLost,
 	            dataOnReceive;
 
-	        createHTML("Service connection established");
+	        //createHTML("Service connection established");
 
 	        /* Obtaining socket */
 	        SASocket = socket;
 
 	        onConnectionLost = function onConnectionLost (reason) {
-	            createHTML("Service Connection disconnected due to following reason:<br />" + reason);
+	            //createHTML("Service Connection disconnected due to following reason:<br />" + reason);
 	        };
 
 	        /* Inform when connection would get lost */
@@ -93,7 +93,7 @@ connectionListener = {
 	            //var newData;
 
 	            if (!SAAgent.channelIds[0]) {
-	                createHTML("Something goes wrong...NO CHANNEL ID!");
+	                //createHTML("Something goes wrong...NO CHANNEL ID!");
 	                return;
 	            }
 	            
@@ -122,15 +122,15 @@ connectionListener = {
 
 	            /* Send new data to Consumer */
 	            SASocket.sendData(SAAgent.channelIds[0], stepCount);
-	            createHTML("Send massage:<br />" +
-	                        newData);
+	            //createHTML("Send massage:<br />" +
+	                        //newData);
 	        };
 
 	        /* Set listener for incoming data from Consumer */
 	        SASocket.setDataReceiveListener(dataOnReceive);
 	    },
 	    onerror: function (errorCode) {
-	        createHTML("Service connection error<br />errorCode: " + errorCode);
+	        //createHTML("Service connection error<br />errorCode: " + errorCode);
 	    }
 	};
 
@@ -139,8 +139,8 @@ function requestOnSuccess (agents) {
 
     for (i; i < agents.length; i += 1) {
         if (agents[i].role === "PROVIDER") {
-            createHTML("Service Provider found!<br />" +
-                        "Name: " +  agents[i].name);
+            //createHTML("Service Provider found!<br />" +
+                        //"Name: " +  agents[i].name);
             SAAgent = agents[i];
             break;
         }
@@ -148,13 +148,13 @@ function requestOnSuccess (agents) {
 
     /* Set listener for upcoming connection from Consumer */
     SAAgent.setServiceConnectionListener(connectionListener);
-};
+}
 
 function requestOnError (e) {
-    createHTML("requestSAAgent Error" +
-                "Error name : " + e.name + "<br />" +
-                "Error message : " + e.message);
-};
+    //createHTML("requestSAAgent Error" +
+                //"Error name : " + e.name + "<br />" +
+                //"Error message : " + e.message);
+}
 
 /* Requests the SAAgent specified in the Accessory Service Profile */
 webapis.sa.requestSAAgent(requestOnSuccess, requestOnError);
