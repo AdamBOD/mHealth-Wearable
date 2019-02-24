@@ -56,13 +56,13 @@ var SAAgent, SASocket, connectionListener
 connectionListener = {
 	    /* Remote peer agent (Consumer) requests a service (Provider) connection */
 	    onrequest: function (peerAgent) {
-	    	window.alert(peerAgent.appName)
+	    	//window.alert(peerAgent.appName)
 
 	        //createHTML("peerAgent: peerAgent.appName<br />" +
 	                    //"is requsting Service conncetion...");
 
 	        /* Check connecting peer by appName*/
-	        if (peerAgent.appName === "mHealthService") {
+	        if (peerAgent.appName === "mHealthMobile") {
 	            SAAgent.acceptServiceConnectionRequest(peerAgent);
 	            window.alert("Connected to phone");
 	            //createHTML("Service connection request accepted.");
@@ -143,7 +143,7 @@ function requestOnSuccess (agents) {
         if (agents[i].role === "PROVIDER") {
             //createHTML("Service Provider found!<br />" +
                         //"Name: " +  agents[i].name);
-        	window.alert("Service Provider found! " + "Name: " +  agents[i].name);
+        	//window.alert("Service Provider found! " + "Name: " +  agents[i].name);
             SAAgent = agents[i];
             break;
         }
