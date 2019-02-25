@@ -80,13 +80,11 @@ connectionListener = {
 	        var onConnectionLost,
 	            dataOnReceive;
 
-	        //createHTML("Service connection established");
-
 	        /* Obtaining socket */
 	        SASocket = socket;
 
 	        onConnectionLost = function onConnectionLost (reason) {
-	            //createHTML("Service Connection disconnected due to following reason:<br />" + reason);
+	        	
 	        };
 
 	        /* Inform when connection would get lost */
@@ -96,8 +94,12 @@ connectionListener = {
 	            //var newData;
 
 	            if (!SAAgent.channelIds[0]) {
-	                //createHTML("Something goes wrong...NO CHANNEL ID!");
+	            	window.alert ("Invalid Channel ID");
 	                return;
+	            }
+	            
+	            if (data === "heart") {
+	            	window.webapis.motion.start("HRM", onchangedCB);
 	            }
 	            
 	            function onsuccessCB(pedometerInfo) {
@@ -116,7 +118,33 @@ connectionListener = {
 	                console.log("From now on, you will be notified when the pedometer data changes.");
 	                // To get the current data information
 	                tizen.humanactivitymonitor.getHumanActivityData("PEDOMETER", onsuccessCB, onerrorCB);
-	            } 
+	            }
+	            
+	            var heartbeatBPM = 0;
+	            function onchangedCB (heartbeatInfo) {
+	      	    	heartbeatBPM = heartbeatInfo.heartRate
+		      	 	if (heartbeatBPM > 0) {
+		      	 		document.getElementById("heartbeatBPM").innerText = heartbeatBPM;
+		      	 		var heartAnimationDurationMultiplier = 1000 / (heartbeatBPM / 60);
+		      	 		document.querySelector(".ecgLine").style.animationDuration = heartAnimationDurationMultiplier + "ms";
+		      	 		
+		      	 		var URL = "https://mhealth-api-fyp.herokuapp.com/data";
+	      	            var healthDataSend = {
+	      	            	userID: 200,
+	      	            	heartbeat: heartbeatBPM,
+	      	            	stepsTaken: 1200,
+	      	            	caloriesBurned: 2200
+	      	            };
+
+	      	            
+	                   
+	                    window.webapis.motion.stop("HRM");
+	                    tizen.humanactivitymonitor.stop("HRM");
+	             	} else if (heartbeatBPM < 0) {
+	             		window.webapis.motion.stop("HRM");
+	             		tizen.humanactivitymonitor.stop("HRM");
+	             	}
+	            }
 	            
 	            tizen.humanactivitymonitor.start("PEDOMETER", onchangedCB);
 	            
