@@ -3,6 +3,7 @@
 	<name>mHealthMonitor</name>
 	<comment></comment>
 	<projects>
+		<project>mHealthMonitorService</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

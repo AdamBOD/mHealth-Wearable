@@ -15,7 +15,7 @@
  */
 
 /* global console, define */
-
+/*
 /**
  * App module.
  *
@@ -23,7 +23,7 @@
  * @requires {@link views/init}
  * @namespace app
  */
-
+/*
 define({
     name: 'app',
     requires: [
@@ -31,7 +31,6 @@ define({
     ],
     def: function appInit() {
         'use strict';
-
         console.log('app::def');
 
         /**
@@ -40,6 +39,7 @@ define({
          * @memberof app
          * @public
          */
+/*
         function init() {
             console.log('app::init');
         }
@@ -48,4 +48,145 @@ define({
             init: init
         };
     }
-});
+});*/
+
+var stepCount, stepStatus, speed, walkingFrequency;
+var SAAgent, SASocket, connectionListener
+
+connectionListener = {
+	    /* Remote peer agent (Consumer) requests a service (Provider) connection */
+	    onrequest: function (peerAgent) {
+	    	//window.alert(peerAgent.appName)
+
+	        //createHTML("peerAgent: peerAgent.appName<br />" +
+	                    //"is requsting Service conncetion...");
+
+	        /* Check connecting peer by appName*/
+	        if (peerAgent.appName === "mHealthMobile") {
+	            SAAgent.acceptServiceConnectionRequest(peerAgent);
+	            window.alert("Connected to phone");
+	            //createHTML("Service connection request accepted.");
+
+	        } else {
+	            SAAgent.rejectServiceConnectionRequest(peerAgent);
+	            window.alert("Rejected connection to phone");
+	            //createHTML("Service connection request rejected.");
+
+	        }
+	    },
+
+	    /* Connection between Provider and Consumer is established */
+	    onconnect: function (socket) {
+	        var onConnectionLost,
+	            dataOnReceive;
+
+	        /* Obtaining socket */
+	        SASocket = socket;
+
+	        onConnectionLost = function onConnectionLost (reason) {
+	        	
+	        };
+
+	        /* Inform when connection would get lost */
+	        SASocket.setSocketStatusListener(onConnectionLost);
+
+	        dataOnReceive =  function dataOnReceive (channelId, data) {
+	            //var newData;
+
+	            if (!SAAgent.channelIds[0]) {
+	            	window.alert ("Invalid Channel ID");
+	                return;
+	            }
+	            
+	            if (data === "heart") {
+	            	window.webapis.motion.start("HRM", onchangedCB);
+	            }
+	            
+	            function onsuccessCB(pedometerInfo) {
+	            	stepCount=0;
+	            	stepStatus=pedometerInfo.stepStatus;
+	            	stepCount=pedometerInfo.cumulativeTotalStepCount;
+	                console.log("Step status : " + pedometerInfo.stepStatus);
+	                console.log("Cumulative total step count : " + pedometerInfo.cumulativeTotalStepCount);
+	            }
+
+	            function onerrorCB(error) {
+	                console.log("Error occurs. name:"+error.name + ", message: "+error.message);
+	            }
+
+	            function onchangedCB(pedometerdata) {
+	                console.log("From now on, you will be notified when the pedometer data changes.");
+	                // To get the current data information
+	                tizen.humanactivitymonitor.getHumanActivityData("PEDOMETER", onsuccessCB, onerrorCB);
+	            }
+	            
+	            var heartbeatBPM = 0;
+	            function onchangedCB (heartbeatInfo) {
+	      	    	heartbeatBPM = heartbeatInfo.heartRate
+		      	 	if (heartbeatBPM > 0) {
+		      	 		document.getElementById("heartbeatBPM").innerText = heartbeatBPM;
+		      	 		var heartAnimationDurationMultiplier = 1000 / (heartbeatBPM / 60);
+		      	 		document.querySelector(".ecgLine").style.animationDuration = heartAnimationDurationMultiplier + "ms";
+		      	 		
+		      	 		var URL = "https://mhealth-api-fyp.herokuapp.com/data";
+	      	            var healthDataSend = {
+	      	            	userID: 200,
+	      	            	heartbeat: heartbeatBPM,
+	      	            	stepsTaken: 1200,
+	      	            	caloriesBurned: 2200
+	      	            };
+
+	      	            
+	                   
+	                    window.webapis.motion.stop("HRM");
+	                    tizen.humanactivitymonitor.stop("HRM");
+	             	} else if (heartbeatBPM < 0) {
+	             		window.webapis.motion.stop("HRM");
+	             		tizen.humanactivitymonitor.stop("HRM");
+	             	}
+	            }
+	            
+	            tizen.humanactivitymonitor.start("PEDOMETER", onchangedCB);
+	            
+	            
+	            //newData = data + " :: " + new Date();
+
+	            /* Send new data to Consumer */
+	            SASocket.sendData(SAAgent.channelIds[0], stepCount);
+	            //createHTML("Send massage:<br />" +
+	                        //newData);
+	        };
+
+	        /* Set listener for incoming data from Consumer */
+	        SASocket.setDataReceiveListener(dataOnReceive);
+	    },
+	    onerror: function (errorCode) {
+	        //createHTML("Service connection error<br />errorCode: " + errorCode);
+	    }
+	};
+
+function requestOnSuccess (agents) {
+    var i = 0;
+    for (i; i < agents.length; i += 1) {
+        if (agents[i].role === "PROVIDER") {
+            //createHTML("Service Provider found!<br />" +
+                        //"Name: " +  agents[i].name);
+        	//window.alert("Service Provider found! " + "Name: " +  agents[i].name);
+            SAAgent = agents[i];
+            break;
+        }
+    }
+
+    /* Set listener for upcoming connection from Consumer */
+    SAAgent.setServiceConnectionListener(connectionListener);
+}
+
+function requestOnError (e) {
+	window.alert ("requestSAAgent Error " + "Error name : " + e.name + " " + "Error message : " + e.message)
+    //createHTML("requestSAAgent Error" +
+                //"Error name : " + e.name + "<br />" +
+                //"Error message : " + e.message);
+}
+
+/* Requests the SAAgent specified in the Accessory Service Profile */
+webapis.sa.requestSAAgent(requestOnSuccess, requestOnError);

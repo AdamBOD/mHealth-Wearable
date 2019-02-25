@@ -9,144 +9,69 @@
     <link rel="stylesheet" media="all and (-tizen-geometric-shape: circle)"
           href="lib/tau/wearable/theme/default/tau.circle.min.css">
     <link rel="stylesheet" type="text/css" href="./css/style.css"/>
-    <link rel="stylesheet" type="text/css" href="./css/slick-theme.css"/>
-    <link rel="stylesheet" type="text/css" href="./css/slick.css"/>
     <link rel="stylesheet" type="text/css" href="./css/bootstrap.min.css"/>
 </head>
 
 <body>
     <div class="ui-page ui-page-active" id="main">
-        <div class="carouselContainer">
-            <div class="carouselItem">
-                <div class="carouselItemContainer">
-                    <div class="row centreContent">
-                        <svg class="ecgSVG" height="100" width="100">
-                            <path class="ecgLine" d="M0 80 L20 80 L30 90 L40 0 L50 100 L60 80 L100 80" stroke="chartreuse" stroke-width="4" fill="none"/>
-                        </svg>
-                    </div>
-                    <div class="divider"></div>
-                    <div class="row">
-                        <h4 class="col-lg-12 col-md-12 col-sm-12 col-xs-12 centreContent">Heart Rate (BPM)</h4>
-                    </div>
-                    <div class="row">
-                        <h1 class="col-lg-12 col-md-12 col-sm-12 col-xs-12 centreContent" id="heartbeatBPM">Getting data</h1>
-                    </div>
-                    <div class="row">
-                        <div class="col-6">
-                            <label class="centreText h7">Avg BPM (Today)</label>
-                            <br>
-                            <h2 class="centreText">67</h2>
-                        </div>
-                        <div class="col-6" style="padding-right: 12px;">
-                            <label class="centreText h7">Max BPM (Today)</label>
-                            <br>
-                            <h2 class="centreText">94</h2>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="carouselItem">
-                <div class="carouselItemContainer">
-                    <div class="row centreContent">
-                        <img class="footstepIcon" src="./images/footstep.png">
-                    </div>
-                    <div class="divider"></div>
-                    <div class="row">
-                        <h4 class="col-lg-12 col-md-12 col-sm-12 col-xs-12 centreContent">Footsteps Today</h4>
-                    </div>
-                    <div class="row">
-                        <h1 class="col-lg-12 col-md-12 col-sm-12 col-xs-12 centreContent">6666<span class="subHeading">/10000</span></h1>
-                    </div>
-                    <div class="row">
-                        <div class="col-6 centreText">
-                            <label class="centreText h7">Calories burned</label>
-                            <br>
-                            <h2 class="centreText">6756</h2>
-                        </div>
-                        <div class="col-6 centreText">
-                            <label class="centreText h7">Steps (Hour)</label>
-                            <br>
-                            <h2 class="centreText">232</h2>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+         <div class="row centreContent">
+             <svg class="ecgSVG" height="100" width="100">
+                 <path class="ecgLine" d="M0 80 L20 80 L30 90 L40 0 L50 100 L60 80 L100 80" stroke="chartreuse" stroke-width="4" fill="none"/>
+             </svg>
+         </div>
+         <div class="divider"></div>
+         <div class="row">
+             <h4 class="col-lg-12 col-md-12 col-sm-12 col-xs-12 centreContent">Heart Rate (BPM)</h4>
+         </div>
+         <div class="row">
+             <h1 class="col-lg-12 col-md-12 col-sm-12 col-xs-12 centreContent" id="heartbeatBPM">Getting data</h1>
+         </div>
+         <div class="row">
+             <div class="col-6">
+                 <label class="centreText h7">Avg BPM (Today)</label>
+                 <br>
+                 <h2 class="centreText">67</h2>
+             </div>
+             <div class="col-6" style="padding-right: 12px;">
+                 <label class="centreText h7">Max BPM (Today)</label>
+                 <br>
+                 <h2 class="centreText">94</h2>
+             </div>
+         </div>
     </div>
   <script src="./lib/tau/wearable/js/tau.js"></script>
   <script src="./js/core/core.js" data-main="./js/app.js"></script>
   <script src="./js/jquery.min.js"></script>
   <script type="text/javascript" src="https://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
-  <script type="text/javascript" src="js/slick.min.js"></script>
-  <script type="text/javascript" src="js/bootstrap.min.js"></script>
   <script>
-  	$(document).ready(function(){
-  	  var pageIndex = 0;
-      var heartbeatBPM = 0;
-                
-  	  getHeartbeat();
-  	  
-  	  
-      $('.carouselContainer').slick({
-        dots: true,
-        draggable: true,
-        infinite: false,
-        arrows: false,
-        variableWidth: true,
-        adaptiveHeight: true,
-        dotsClass: 'carouselDots'
-      });
-	  
-	  document.addEventListener('rotarydetent', function (ev) {
-    		var direction = ev.detail.direction;
-		pageIndex = $('.carouselContainer').slick('slickCurrentSlide');
-		if (direction == 'CW') {
-        		/* Add behavior for clockwise rotation */
-        		if (pageIndex == 0) {
-        			pageIndex++;
-        		}
-        		else {
-        			navigator.vibrate([50, 50, 50]);
-        			return
-     		}
-    		} 
-    		else if (direction == 'CCW') {
-        		/* Add behavior for counter-clockwise rotation */
-        		if (pageIndex == 1) {
-        			pageIndex--;
-        		}
-        		else {
-        			navigator.vibrate([50, 50, 50]);
-        			return
-     		}
-        	}
-        	$('.carouselContainer').slick('slickGoTo', pageIndex, false);
-    	  });
-    });
-    
-    function getHeartbeat () {
-      	//tizen.humanactivitymonitor.start("HRM", (heartbeatInfo) => {
-      	window.webapis.motion.start("HRM", (heartbeatInfo) => {
-		  	heartbeatBPM = heartbeatInfo.heartRate
-		  	if (heartbeatBPM > 0) {
-		  		document.getElementById("heartbeatBPM").innerText = heartbeatBPM;
-		  		//tizen.humanactivitymonitor.stop("HRM");
-		  		window.webapis.motion.stop("HRM");
-		  		var heartAnimationDurationMultiplier = 1000 / (heartbeatBPM / 60);
-		  		document.querySelector(".ecgLine").style.animationDuration = heartAnimationDurationMultiplier + "ms";
-		  		
-		  		var URL = "https://mhealth-api-fyp.herokuapp.com/data";
-                var healthDataSend = {
-                    userID: 200,
-                    heartbeat: heartbeatBPM,
-                    stepsTaken: 1200,
-                    caloriesBurned: 2200
-                };
-                $.post(URL, healthDataSend , (data, status) => {});
-		  	}
-	  	});
+  		var heartbeatBPM = 0;
+      function onchangedCB (heartbeatInfo) {
+	    	heartbeatBPM = heartbeatInfo.heartRate
+	 	if (heartbeatBPM > 0) {
+	 		document.getElementById("heartbeatBPM").innerText = heartbeatBPM;
+	 		var heartAnimationDurationMultiplier = 1000 / (heartbeatBPM / 60);
+	 		document.querySelector(".ecgLine").style.animationDuration = heartAnimationDurationMultiplier + "ms";
+	 		
+	 		var URL = "https://mhealth-api-fyp.herokuapp.com/data";
+	             var healthDataSend = {
+                 userID: 200,
+                 heartbeat: heartbeatBPM,
+                 stepsTaken: 1200,
+                 caloriesBurned: 2200
+             };
+             $.post(URL, healthDataSend , (data, status) => {});
+             
+             window.webapis.motion.stop("HRM");
+             tizen.humanactivitymonitor.stop("HRM");
+       	} else if (heartbeatBPM < 0) {
+       		window.webapis.motion.stop("HRM");
+            tizen.humanactivitymonitor.stop("HRM");
+       	}
       }
+      
+      $(document).ready(function(){
+      	window.webapis.motion.start("HRM", onchangedCB);
+      });
   </script>
 
 </body>

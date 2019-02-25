@@ -4,14 +4,16 @@
     <tizen:application id="6iuVFqoQsU.mHealthMonitor" package="6iuVFqoQsU" required_version="2.3.1"/>
     <content src="index.html"/>
     <feature name="http://tizen.org/feature/screen.size.all"/>
-    <feature name="http://developer.samsung.com/tizen/feature/network.accessory_protocol"/>
-    <icon src="icon - watch.png"/>
-    <tizen:metadata key="AccessoryServicesLocation" value="res/xml/accessoryservices.xml"/>
+    <feature name="http://tizen.org/feature/sensor.pedometer"/>
+    <feature name="http://tizen.org/feature/sensor.sleep_monitor"/>
+    <feature name="http://tizen.org/feature/sensor.heart_rate_monitor"/>
+    <icon src="icon.png"/>
     <name>mHealth Monitor</name>
+    <tizen:privilege name="http://tizen.org/privilege/alarm.get"/>
+    <tizen:privilege name="http://tizen.org/privilege/alarm.set"/>
     <tizen:privilege name="http://tizen.org/privilege/location"/>
     <tizen:privilege name="http://tizen.org/privilege/healthinfo"/>
     <tizen:privilege name="http://tizen.org/privilege/internet"/>
-    <tizen:privilege name="http://developer.samsung.com/tizen/privilege/accessoryprotocol"/>
     <tizen:profile name="wearable"/>
-    <tizen:setting background-support="enable" encryption="disable" hwkey-event="enable"/>
+    <tizen:setting background-support="disable" encryption="disable" hwkey-event="enable"/>
 </widget>
