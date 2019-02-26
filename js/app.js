@@ -64,7 +64,7 @@ connectionListener = {
 	        /* Check connecting peer by appName*/
 	        if (peerAgent.appName === "mHealthMobile") {
 	            SAAgent.acceptServiceConnectionRequest(peerAgent);
-	            window.alert("Connected to phone");
+	            //window.alert("Connected to phone");
 	            //createHTML("Service connection request accepted.");
 
 	        } else {
@@ -98,11 +98,14 @@ connectionListener = {
 	                return;
 	            }
 	            
-	            if (data === "heart") {
+	            if (data == "Heart") {
 	            	window.webapis.motion.start("HRM", onchangedCB);
 	            }
+	            else if (data == "All") {
+	            	tizen.humanactivitymonitor.start('SLEEP_MONITOR', onchangedCB);
+	            }
 	            
-	            function onsuccessCB(pedometerInfo) {
+	            /*function onsuccessCB(pedometerInfo) {
 	            	stepCount=0;
 	            	stepStatus=pedometerInfo.stepStatus;
 	            	stepCount=pedometerInfo.cumulativeTotalStepCount;
@@ -118,35 +121,38 @@ connectionListener = {
 	                console.log("From now on, you will be notified when the pedometer data changes.");
 	                // To get the current data information
 	                tizen.humanactivitymonitor.getHumanActivityData("PEDOMETER", onsuccessCB, onerrorCB);
-	            }
+	            }*/
 	            
 	            var heartbeatBPM = 0;
 	            function onchangedCB (heartbeatInfo) {
 	      	    	heartbeatBPM = heartbeatInfo.heartRate
 		      	 	if (heartbeatBPM > 0) {
-		      	 		document.getElementById("heartbeatBPM").innerText = heartbeatBPM;
-		      	 		var heartAnimationDurationMultiplier = 1000 / (heartbeatBPM / 60);
-		      	 		document.querySelector(".ecgLine").style.animationDuration = heartAnimationDurationMultiplier + "ms";
 		      	 		
-		      	 		var URL = "https://mhealth-api-fyp.herokuapp.com/data";
 	      	            var healthDataSend = {
 	      	            	userID: 200,
 	      	            	heartbeat: heartbeatBPM,
 	      	            	stepsTaken: 1200,
 	      	            	caloriesBurned: 2200
 	      	            };
-
+	      	            SASocket.sendData(SAAgent.channelIds[0], heartbeatBPM);
+	      	            var URL = "https://mhealth-api-fyp.herokuapp.com/data";
+	      	            var healthDataSend = {
+      	            		userID: 200,
+      	            		heartbeat: heartbeatBPM,
+      	            		stepsTaken: 1200,
+      	            		caloriesBurned: 2200
+	      	            };
 	      	            
-	                   
 	                    window.webapis.motion.stop("HRM");
 	                    tizen.humanactivitymonitor.stop("HRM");
 	             	} else if (heartbeatBPM < 0) {
 	             		window.webapis.motion.stop("HRM");
 	             		tizen.humanactivitymonitor.stop("HRM");
+	             		SASocket.sendData(SAAgent.channelIds[0], "Error getting data from watch.");
 	             	}
 	            }
 	            
-	            tizen.humanactivitymonitor.start("PEDOMETER", onchangedCB);
+	            //tizen.humanactivitymonitor.start("PEDOMETER", onchangedCB);
 	            
 	            
 	            //newData = data + " :: " + new Date();
