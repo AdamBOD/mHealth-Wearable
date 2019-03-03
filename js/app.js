@@ -130,10 +130,12 @@ connectionListener = {
 	            
 	            function onchangedCB (heartbeatInfo) {
 	      	    	heartbeatBPM = heartbeatInfo.heartRate
-		      	 	if (heartbeatBPM > 0 && heartbeatBPM !== "undefined") {
-	      	            SASocket.sendData(SAAgent.channelIds[0], heartbeatBPM);	      	            
-	                    window.webapis.motion.stop("HRM");
-	                    tizen.humanactivitymonitor.stop("HRM");
+		      	 	if (heartbeatBPM != "undefined") {
+		      	 		if (heartbeatBPM > 0) {
+		      	 			SASocket.sendData(SAAgent.channelIds[0], heartbeatBPM);	      	            
+		      	 			window.webapis.motion.stop("HRM");
+		      	 			tizen.humanactivitymonitor.stop("HRM");
+		      	 		}	      	            
 	             	} else if (heartbeatBPM < 0) {
 	             		window.webapis.motion.stop("HRM");
 	             		tizen.humanactivitymonitor.stop("HRM");
