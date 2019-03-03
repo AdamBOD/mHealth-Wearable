@@ -52,6 +52,7 @@ define({
 
 var stepCount, stepStatus, speed, walkingFrequency;
 var SAAgent, SASocket, connectionListener
+var heartbeatBPM = 0;
 
 connectionListener = {
 	    /* Remote peer agent (Consumer) requests a service (Provider) connection */
@@ -104,6 +105,9 @@ connectionListener = {
 	            else if (data == "All") {
 	            	tizen.humanactivitymonitor.start('SLEEP_MONITOR', onchangedCB);
 	            }
+	            else if (data == "Retry") {
+	            	SASocket.sendData(SAAgent.channelIds[0], heartbeatBPM);	
+	            }
 	            
 	            /*function onsuccessCB(pedometerInfo) {
 	            	stepCount=0;
@@ -123,26 +127,11 @@ connectionListener = {
 	                tizen.humanactivitymonitor.getHumanActivityData("PEDOMETER", onsuccessCB, onerrorCB);
 	            }*/
 	            
-	            var heartbeatBPM = 0;
+	            
 	            function onchangedCB (heartbeatInfo) {
 	      	    	heartbeatBPM = heartbeatInfo.heartRate
-		      	 	if (heartbeatBPM > 0) {
-		      	 		
-	      	            var healthDataSend = {
-	      	            	userID: 200,
-	      	            	heartbeat: heartbeatBPM,
-	      	            	stepsTaken: 1200,
-	      	            	caloriesBurned: 2200
-	      	            };
-	      	            SASocket.sendData(SAAgent.channelIds[0], heartbeatBPM);
-	      	            var URL = "https://mhealth-api-fyp.herokuapp.com/data";
-	      	            var healthDataSend = {
-      	            		userID: 200,
-      	            		heartbeat: heartbeatBPM,
-      	            		stepsTaken: 1200,
-      	            		caloriesBurned: 2200
-	      	            };
-	      	            
+		      	 	if (heartbeatBPM > 0 && heartbeatBPM !== "undefined") {
+	      	            SASocket.sendData(SAAgent.channelIds[0], heartbeatBPM);	      	            
 	                    window.webapis.motion.stop("HRM");
 	                    tizen.humanactivitymonitor.stop("HRM");
 	             	} else if (heartbeatBPM < 0) {
