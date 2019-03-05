@@ -51,8 +51,14 @@ define({
 });*/
 
 var stepCount, stepStatus, speed, walkingFrequency;
-var SAAgent, SASocket, connectionListener
+var SAAgent, SASocket, connectionListener;
 var heartbeatBPM = 0;
+
+tizen.humanactivitymonitor.start("PEDOMETER", onchangedCB);
+
+function onchangedCB (pedometerdata) {
+	console.log ("Pedometer started")
+}
 
 connectionListener = {
 	    /* Remote peer agent (Consumer) requests a service (Provider) connection */
@@ -93,19 +99,26 @@ connectionListener = {
 
 	        dataOnReceive =  function dataOnReceive (channelId, data) {
 	            //var newData;
+	        	var requestedSensor;
 
 	            if (!SAAgent.channelIds[0]) {
 	            	window.alert ("Invalid Channel ID");
 	                return;
 	            }
 	            
-	            if (data == "Heart") {
+	            if (data === "Heart") {
+	            	requestedSensor = data;
 	            	window.webapis.motion.start("HRM", onchangedCB);
 	            }
-	            else if (data == "All") {
+	            else if (data === "Exercise") {
+	            	tizen.humanactivitymonitor.getHumanActivityData("PEDOMETER", onsuccessCB, onerrorCB);
+	            	requestedSensor = data;
+	            }
+	            else if (data === "Sleep") {
+	            	requestedSensor = data;
 	            	tizen.humanactivitymonitor.start('SLEEP_MONITOR', onchangedCB);
 	            }
-	            else if (data == "Retry") {
+	            else if (data === "Retry") {
 	            	SASocket.sendData(SAAgent.channelIds[0], heartbeatBPM);	
 	            }
 	            
@@ -128,20 +141,37 @@ connectionListener = {
 	            }*/
 	            
 	            
-	            function onchangedCB (heartbeatInfo) {
-	      	    	heartbeatBPM = heartbeatInfo.heartRate
-		      	 	if (heartbeatBPM != "undefined") {
-		      	 		if (heartbeatBPM > 0) {
-		      	 			SASocket.sendData(SAAgent.channelIds[0], heartbeatBPM);	      	            
-		      	 			window.webapis.motion.stop("HRM");
-		      	 			tizen.humanactivitymonitor.stop("HRM");
-		      	 		}	      	            
-	             	} else if (heartbeatBPM < 0) {
-	             		window.webapis.motion.stop("HRM");
-	             		tizen.humanactivitymonitor.stop("HRM");
-	             		SASocket.sendData(SAAgent.channelIds[0], "Error getting data from watch.");
-	             	}
+	            function onchangedCB (pedometerdata) {
+	            	if (requestedSensor === "Heart") {
+	            		heartbeatBPM = pedometerdata.heartRate;
+			      	 	if (heartbeatBPM !== "undefined") {
+			      	 		if (heartbeatBPM > 0) {
+			      	 			SASocket.sendData(SAAgent.channelIds[0], heartbeatBPM);
+			      	 			window.webapis.motion.stop("HRM");
+			      	 			tizen.humanactivitymonitor.stop("HRM");
+			      	 		}	      	            
+		             	} else if (heartbeatBPM < 0) {
+		             		window.webapis.motion.stop("HRM");
+		             		tizen.humanactivitymonitor.stop("HRM");
+		             		SASocket.sendData(SAAgent.channelIds[0], "Error getting data from watch.");
+		             	}
+	            	}
+	            	else if (requestedSensor === "Sleep") {
+	            		
+	            	}
+	      	    	
 	            }
+	            
+	            function onsuccessCB(pedometerInfo) {
+	            	window.alert (pedometerInfo.cumulativeTotalStepCount)
+	            	SASocket.sendData(SAAgent.channelIds[0], JSON.stringify(pedometerInfo));
+             		//tizen.humanactivitymonitor.stop("PEDOMETER");
+       		 	}
+
+       		 	function onerrorCB(error) {
+       		 		window.alert("Can't get exercise")
+       		 		console.log("Error occurs. name:"+error.name + ", message: "+error.message);
+       		 	}
 	            
 	            //tizen.humanactivitymonitor.start("PEDOMETER", onchangedCB);
 	            
@@ -179,7 +209,7 @@ function requestOnSuccess (agents) {
 }
 
 function requestOnError (e) {
-	window.alert ("requestSAAgent Error " + "Error name : " + e.name + " " + "Error message : " + e.message)
+	window.alert ("requestSAAgent Error " + "Error name : " + e.name + " " + "Error message : " + e.message);
     //createHTML("requestSAAgent Error" +
                 //"Error name : " + e.name + "<br />" +
                 //"Error message : " + e.message);
