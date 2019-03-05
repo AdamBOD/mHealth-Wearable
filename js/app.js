@@ -163,7 +163,7 @@ connectionListener = {
 	            }
 	            
 	            function onsuccessCB(pedometerInfo) {
-	            	window.alert (pedometerInfo.cumulativeTotalStepCount)
+	            	window.alert ("Step Count: " + pedometerInfo.cumulativeTotalStepCount + "\nCalories Burned: " + pedometerInfo.cumulativeCalorie + "Frequency: " + pedometerInfo.walkingFrequency)
 	            	var exerciseData = {
 	            		stepCount: pedometerInfo.cumulativeTotalStepCount,
 	            		calories: pedometerInfo.cumulativeCalorie,
