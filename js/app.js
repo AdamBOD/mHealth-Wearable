@@ -164,7 +164,12 @@ connectionListener = {
 	            
 	            function onsuccessCB(pedometerInfo) {
 	            	window.alert (pedometerInfo.cumulativeTotalStepCount)
-	            	SASocket.sendData(SAAgent.channelIds[0], JSON.stringify(pedometerInfo));
+	            	var exerciseData = {
+	            		stepCount: pedometerInfo.cumulativeTotalStepCount,
+	            		calories: pedometerInfo.cumulativeCalorie,
+	            		frequency: pedometerInfo.walkingFrequency
+	            	}
+	            	SASocket.sendData(SAAgent.channelIds[0], JSON.stringify(exerciseData));
              		//tizen.humanactivitymonitor.stop("PEDOMETER");
        		 	}
 
