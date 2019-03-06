@@ -53,6 +53,7 @@ define({
 var stepCount, stepStatus, speed, walkingFrequency;
 var SAAgent, SASocket, connectionListener;
 var heartbeatBPM = 0;
+var exerciseData = {};
 
 tizen.humanactivitymonitor.start("PEDOMETER", onchangedCB);
 
@@ -61,44 +62,29 @@ function onchangedCB (pedometerdata) {
 }
 
 connectionListener = {
-	    /* Remote peer agent (Consumer) requests a service (Provider) connection */
 	    onrequest: function (peerAgent) {
-	    	//window.alert(peerAgent.appName)
-
-	        //createHTML("peerAgent: peerAgent.appName<br />" +
-	                    //"is requsting Service conncetion...");
-
-	        /* Check connecting peer by appName*/
 	        if (peerAgent.appName === "mHealthMobile") {
 	            SAAgent.acceptServiceConnectionRequest(peerAgent);
-	            //window.alert("Connected to phone");
-	            //createHTML("Service connection request accepted.");
 
 	        } else {
 	            SAAgent.rejectServiceConnectionRequest(peerAgent);
 	            window.alert("Rejected connection to phone");
-	            //createHTML("Service connection request rejected.");
-
 	        }
 	    },
-
-	    /* Connection between Provider and Consumer is established */
+	    
 	    onconnect: function (socket) {
 	        var onConnectionLost,
 	            dataOnReceive;
 
-	        /* Obtaining socket */
 	        SASocket = socket;
 
 	        onConnectionLost = function onConnectionLost (reason) {
 	        	
 	        };
 
-	        /* Inform when connection would get lost */
 	        SASocket.setSocketStatusListener(onConnectionLost);
 
 	        dataOnReceive =  function dataOnReceive (channelId, data) {
-	            //var newData;
 	        	var requestedSensor;
 
 	            if (!SAAgent.channelIds[0]) {
@@ -108,7 +94,7 @@ connectionListener = {
 	            
 	            if (data === "Heart") {
 	            	requestedSensor = data;
-	            	window.webapis.motion.start("HRM", onchangedCB);
+	            	window.webapis.motion.start("HRM", onchanged);
 	            }
 	            else if (data === "Exercise") {
 	            	tizen.humanactivitymonitor.getHumanActivityData("PEDOMETER", onsuccessCB, onerrorCB);
@@ -119,63 +105,50 @@ connectionListener = {
 	            	tizen.humanactivitymonitor.start('SLEEP_MONITOR', onchangedCB);
 	            }
 	            else if (data === "Retry") {
-	            	SASocket.sendData(SAAgent.channelIds[0], heartbeatBPM);	
-	            }
-	            
-	            /*function onsuccessCB(pedometerInfo) {
-	            	stepCount=0;
-	            	stepStatus=pedometerInfo.stepStatus;
-	            	stepCount=pedometerInfo.cumulativeTotalStepCount;
-	                console.log("Step status : " + pedometerInfo.stepStatus);
-	                console.log("Cumulative total step count : " + pedometerInfo.cumulativeTotalStepCount);
-	            }
-
-	            function onerrorCB(error) {
-	                console.log("Error occurs. name:"+error.name + ", message: "+error.message);
-	            }
-
-	            function onchangedCB(pedometerdata) {
-	                console.log("From now on, you will be notified when the pedometer data changes.");
-	                // To get the current data information
-	                tizen.humanactivitymonitor.getHumanActivityData("PEDOMETER", onsuccessCB, onerrorCB);
-	            }*/
-	            
-	            
-	            function onchangedCB (pedometerdata) {
 	            	if (requestedSensor === "Heart") {
-	            		heartbeatBPM = pedometerdata.heartRate;
-			      	 	if (heartbeatBPM !== "undefined") {
-			      	 		if (heartbeatBPM > 0) {
-			      	 			SASocket.sendData(SAAgent.channelIds[0], heartbeatBPM);
-			      	 			window.webapis.motion.stop("HRM");
-			      	 			tizen.humanactivitymonitor.stop("HRM");
-			      	 		}	      	            
-		             	} else if (heartbeatBPM < 0) {
-		             		window.webapis.motion.stop("HRM");
-		             		tizen.humanactivitymonitor.stop("HRM");
-		             		SASocket.sendData(SAAgent.channelIds[0], "Error getting data from watch.");
-		             	}
-	            	}
-	            	else if (requestedSensor === "Sleep") {
-	            		
-	            	}
+	            		SASocket.sendData(SAAgent.channelIds[0], heartbeatBPM);
+	            	} else if (requestedSensor === "Exercise") {
+	            		SASocket.sendData(SAAgent.channelIds[0], exerciseData);
+	            	}	            	
+	            }	            
+	            
+	            function onchanged (heartrateInfo) {
+            		heartbeatBPM = sensorData.heartRate;
+		      	 	if (heartbeatBPM !== "undefined") {
+		      	 		if (heartbeatBPM > 0) {
+		      	 			SASocket.sendData(SAAgent.channelIds[0], heartbeatBPM);
+		      	 			window.webapis.motion.stop("HRM");
+		      	 			tizen.humanactivitymonitor.stop("HRM");
+		      	 		}	      	            
+	             	} else if (heartbeatBPM < 0) {
+	             		window.webapis.motion.stop("HRM");
+	             		tizen.humanactivitymonitor.stop("HRM");
+	             		SASocket.sendData(SAAgent.channelIds[0], "Error getting data from watch.");
+	             	}
 	      	    	
 	            }
 	            
+	            function onchangedCB (sleepInfo) {
+	            	//window.status ("Sleep Recorded")
+	            	var sleepData = {
+	            		status: sleepInfo.status,
+	            		timestamp: sleepInfo.timestamp
+	            	}
+	            	SASocket.sendData(SAAgent.channelIds[0], sleepData);
+	            	window.alert ("Status: " + sleepInfo.status + "\n Time: " + sleepInfo.timestamp);
+	            }
+	            
 	            function onsuccessCB(pedometerInfo) {
-	            	window.alert ("Step Count: " + pedometerInfo.cumulativeTotalStepCount + "\nCalories Burned: " + pedometerInfo.cumulativeCalorie + "Frequency: " + pedometerInfo.walkingFrequency)
 	            	var exerciseData = {
 	            		stepCount: pedometerInfo.cumulativeTotalStepCount,
 	            		calories: pedometerInfo.cumulativeCalorie,
 	            		frequency: pedometerInfo.walkingFrequency
 	            	}
 	            	SASocket.sendData(SAAgent.channelIds[0], JSON.stringify(exerciseData));
-             		//tizen.humanactivitymonitor.stop("PEDOMETER");
        		 	}
 
        		 	function onerrorCB(error) {
-       		 		window.alert("Can't get exercise")
-       		 		console.log("Error occurs. name:"+error.name + ", message: "+error.message);
+       		 		SASocket.sendData(SAAgent.channelIds[0], "Error getting data from watch.");
        		 	}
 	            
 	            //tizen.humanactivitymonitor.start("PEDOMETER", onchangedCB);
@@ -184,16 +157,15 @@ connectionListener = {
 	            //newData = data + " :: " + new Date();
 
 	            /* Send new data to Consumer */
-	            SASocket.sendData(SAAgent.channelIds[0], stepCount);
+	            //SASocket.sendData(SAAgent.channelIds[0], stepCount);
 	            //createHTML("Send massage:<br />" +
 	                        //newData);
 	        };
 
-	        /* Set listener for incoming data from Consumer */
 	        SASocket.setDataReceiveListener(dataOnReceive);
 	    },
 	    onerror: function (errorCode) {
-	        //createHTML("Service connection error<br />errorCode: " + errorCode);
+
 	    }
 	};
 
@@ -201,24 +173,18 @@ function requestOnSuccess (agents) {
     var i = 0;
     for (i; i < agents.length; i += 1) {
         if (agents[i].role === "PROVIDER") {
-            //createHTML("Service Provider found!<br />" +
-                        //"Name: " +  agents[i].name);
-        	//window.alert("Service Provider found! " + "Name: " +  agents[i].name);
             SAAgent = agents[i];
             break;
         }
     }
 
-    /* Set listener for upcoming connection from Consumer */
     SAAgent.setServiceConnectionListener(connectionListener);
 }
 
+
+
 function requestOnError (e) {
 	window.alert ("requestSAAgent Error " + "Error name : " + e.name + " " + "Error message : " + e.message);
-    //createHTML("requestSAAgent Error" +
-                //"Error name : " + e.name + "<br />" +
-                //"Error message : " + e.message);
 }
 
-/* Requests the SAAgent specified in the Accessory Service Profile */
 webapis.sa.requestSAAgent(requestOnSuccess, requestOnError);

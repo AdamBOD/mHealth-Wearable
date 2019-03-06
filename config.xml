@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <widget xmlns:tizen="http://tizen.org/ns/widgets" xmlns="http://www.w3.org/ns/widgets" id="http://yourdomain/mHealthMonitor" version="1.0.0" viewmodes="maximized">
     <access origin="*" subdomains="true"></access>
-    <tizen:application id="6iuVFqoQsU.mHealthMonitor" package="6iuVFqoQsU" required_version="2.3.1"/>
+    <tizen:application id="6iuVFqoQsU.mHealthMonitor" package="6iuVFqoQsU" required_version="3.0"/>
     <content src="index.html"/>
     <feature name="http://tizen.org/feature/screen.size.all"/>
     <feature name="http://developer.samsung.com/tizen/feature/network.accessory_protocol"/>
+    <feature name="tizen.org/feature/sensor.sleep_monitor"/>
+    <feature name="tizen.org/feature/humanactivitymonitor"/>
+    <feature name="tizen.org/feature/sensor.heart_rate_monitor"/>
     <icon src="icon - watch.png"/>
     <tizen:metadata key="AccessoryServicesLocation" value="res/xml/accessoryservices.xml"/>
     <name>mHealth Monitor</name>
