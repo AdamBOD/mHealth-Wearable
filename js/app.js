@@ -50,15 +50,15 @@ define({
     }
 });*/
 
-var stepCount, stepStatus, speed, walkingFrequency;
 var SAAgent, SASocket, connectionListener;
 var heartbeatBPM = 0;
 var exerciseData = {};
+var sleepData = {};
 
 tizen.humanactivitymonitor.start("PEDOMETER", onchangedCB);
 
 function onchangedCB (pedometerdata) {
-	console.log ("Pedometer started")
+	console.log ("Pedometer started");
 }
 
 connectionListener = {
@@ -102,18 +102,24 @@ connectionListener = {
 	            }
 	            else if (data === "Sleep") {
 	            	requestedSensor = data;
-	            	tizen.humanactivitymonitor.start('SLEEP_MONITOR', onchangedCB);
+	            	SASocket.sendData(SAAgent.channelIds[0], JSON.stringify(sleepData));
 	            }
 	            else if (data === "Retry") {
 	            	if (requestedSensor === "Heart") {
 	            		SASocket.sendData(SAAgent.channelIds[0], heartbeatBPM);
 	            	} else if (requestedSensor === "Exercise") {
-	            		SASocket.sendData(SAAgent.channelIds[0], exerciseData);
-	            	}	            	
-	            }	            
+	            		SASocket.sendData(SAAgent.channelIds[0], JSON.stringify(exerciseData));
+	            	} else if (requestedSensor === "Sleep") {
+	            		SASocket.sendData(SAAgent.channelIds[0], JSON.stringify(sleepData));
+	            	}
+	            }
+	            else if (data === "Init") {
+	            	window.webapis.motion.start("HRM", onchanged);
+	            	tizen.humanactivitymonitor.getHumanActivityData("PEDOMETER", onsuccessCB, onerrorCB);
+	            }
 	            
 	            function onchanged (heartrateInfo) {
-            		heartbeatBPM = sensorData.heartRate;
+            		heartbeatBPM = heartrateInfo.heartRate;
 		      	 	if (heartbeatBPM !== "undefined") {
 		      	 		if (heartbeatBPM > 0) {
 		      	 			SASocket.sendData(SAAgent.channelIds[0], heartbeatBPM);
@@ -128,22 +134,12 @@ connectionListener = {
 	      	    	
 	            }
 	            
-	            function onchangedCB (sleepInfo) {
-	            	//window.status ("Sleep Recorded")
-	            	var sleepData = {
-	            		status: sleepInfo.status,
-	            		timestamp: sleepInfo.timestamp
-	            	}
-	            	SASocket.sendData(SAAgent.channelIds[0], sleepData);
-	            	window.alert ("Status: " + sleepInfo.status + "\n Time: " + sleepInfo.timestamp);
-	            }
-	            
 	            function onsuccessCB(pedometerInfo) {
 	            	var exerciseData = {
 	            		stepCount: pedometerInfo.cumulativeTotalStepCount,
 	            		calories: pedometerInfo.cumulativeCalorie,
 	            		frequency: pedometerInfo.walkingFrequency
-	            	}
+	            	};
 	            	SASocket.sendData(SAAgent.channelIds[0], JSON.stringify(exerciseData));
        		 	}
 
@@ -186,5 +182,19 @@ function requestOnSuccess (agents) {
 function requestOnError (e) {
 	window.alert ("requestSAAgent Error " + "Error name : " + e.name + " " + "Error message : " + e.message);
 }
+
+function createSleepHandler () {
+	console.log ("Starting Sleep Recording");
+	tizen.humanactivitymonitor.start('SLEEP_MONITOR', onchangedCB);
+	
+	function onchangedCB (sleepInfo) {
+    	sleepData = {
+    		status: sleepInfo.status,
+    		timestamp: sleepInfo.timestamp
+    	};
+    }
+}
+
+createSleepHandler();
 
 webapis.sa.requestSAAgent(requestOnSuccess, requestOnError);
