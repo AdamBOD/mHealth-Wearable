@@ -86,6 +86,8 @@ connectionListener = {
 
 	        dataOnReceive =  function dataOnReceive (channelId, data) {
 	        	var requestedSensor;
+	        	var heartrateSendCounter = 0;
+	        	var averageHeartrate = 0;
 
 	            if (!SAAgent.channelIds[0]) {
 	            	window.alert ("Invalid Channel ID");
@@ -121,10 +123,18 @@ connectionListener = {
 	            function onchanged (heartrateInfo) {
             		heartbeatBPM = heartrateInfo.heartRate;
 		      	 	if (heartbeatBPM !== "undefined") {
-		      	 		if (heartbeatBPM > 0) {
-		      	 			SASocket.sendData(SAAgent.channelIds[0], heartbeatBPM);
-		      	 			window.webapis.motion.stop("HRM");
-		      	 			tizen.humanactivitymonitor.stop("HRM");
+		      	 		if (heartbeatBPM > 0) {		      	 			
+		      	 			if (heartrateSendCounter < 5) {
+		      	 				averageHeartrate += heartbeatBPM;
+		      	 				heartrateSendCounter ++;		      	 				
+		      	 			} else {
+		      	 				averageHeartrate = Math.trunc(averageHeartrate / 5);		      	 				
+		      	 				window.alert (averageHeartrate)
+		      	 				SASocket.sendData(SAAgent.channelIds[0], averageHeartrate);
+		      	 				window.webapis.motion.stop("HRM");
+			      	 			tizen.humanactivitymonitor.stop("HRM");
+			      	 			heartrateSendCounter = 0;
+		      	 			}
 		      	 		}	      	            
 	             	} else if (heartbeatBPM < 0) {
 	             		window.webapis.motion.stop("HRM");
