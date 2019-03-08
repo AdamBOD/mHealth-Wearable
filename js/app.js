@@ -75,6 +75,7 @@ connectionListener = {
 	    onconnect: function (socket) {
 	        var onConnectionLost,
 	            dataOnReceive;
+	        
 
 	        SASocket = socket;
 
@@ -88,6 +89,7 @@ connectionListener = {
 	        	var requestedSensor;
 	        	var heartrateSendCounter = 0;
 	        	var averageHeartrate = 0;
+		        var retryHeartrateCheck = true;
 
 	            if (!SAAgent.channelIds[0]) {
 	            	window.alert ("Invalid Channel ID");
@@ -97,6 +99,7 @@ connectionListener = {
 	            if (data === "Heart") {
 	            	requestedSensor = data;
 	            	window.webapis.motion.start("HRM", onchanged);
+	            	window.setTimeout(retryHeartrate, 300000);
 	            }
 	            else if (data === "Exercise") {
 	            	tizen.humanactivitymonitor.getHumanActivityData("PEDOMETER", onsuccessCB, onerrorCB);
@@ -128,20 +131,33 @@ connectionListener = {
 		      	 				averageHeartrate += heartbeatBPM;
 		      	 				heartrateSendCounter ++;		      	 				
 		      	 			} else {
-		      	 				averageHeartrate = Math.trunc(averageHeartrate / 5);		      	 				
-		      	 				window.alert (averageHeartrate)
+		      	 				averageHeartrate = Math.trunc(averageHeartrate / 5);
 		      	 				SASocket.sendData(SAAgent.channelIds[0], averageHeartrate);
 		      	 				window.webapis.motion.stop("HRM");
 			      	 			tizen.humanactivitymonitor.stop("HRM");
 			      	 			heartrateSendCounter = 0;
 		      	 			}
-		      	 		}	      	            
-	             	} else if (heartbeatBPM < 0) {
-	             		window.webapis.motion.stop("HRM");
-	             		tizen.humanactivitymonitor.stop("HRM");
-	             		SASocket.sendData(SAAgent.channelIds[0], "Error getting data from watch.");
-	             	}
-	      	    	
+		      	 		} else if (heartbeatBPM < 0) {
+		      	 			window.webapis.motion.stop("HRM");
+		             		tizen.humanactivitymonitor.stop("HRM");
+		             		SASocket.sendData(SAAgent.channelIds[0], "Error getting data from watch.");
+		      	 		}      	            
+	             	}	      	    	
+	            }
+	            
+	            function retryHeartrate () {
+	            	window.webapis.motion.stop("HRM");
+      	 			tizen.humanactivitymonitor.stop("HRM");
+      	 			
+	            	if (retryHeartrateCheck) {
+	            		if (heartrateSendCounter == 0) {
+	            			retryHeartrateCheck = false;
+		            		window.webapis.motion.start("HRM", onchanged);
+		            		window.setTimeout(retryHeartrate, 600000);
+		            	}
+	            	} else {
+	            		
+	            	}         	
 	            }
 	            
 	            function onsuccessCB(pedometerInfo) {
