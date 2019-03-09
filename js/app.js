@@ -52,13 +52,14 @@ define({
 
 var SAAgent, SASocket, connectionListener;
 var heartbeatBPM = 0;
+var heartrateData = {};
 var exerciseData = {};
 var sleepData = {};
 
 tizen.humanactivitymonitor.start("PEDOMETER", onchangedCB);
 
 function onchangedCB (pedometerdata) {
-	console.log ("Pedometer started");
+	console.log ("Pedometer started. " + pedometerdata);
 }
 
 connectionListener = {
@@ -74,13 +75,12 @@ connectionListener = {
 	    
 	    onconnect: function (socket) {
 	        var onConnectionLost,
-	            dataOnReceive;
-	        
+	            dataOnReceive;	        
 
 	        SASocket = socket;
 
 	        onConnectionLost = function onConnectionLost (reason) {
-	        	
+	        	console.log (reason);
 	        };
 
 	        SASocket.setSocketStatusListener(onConnectionLost);
@@ -89,7 +89,7 @@ connectionListener = {
 	        	var requestedSensor;
 	        	var heartrateSendCounter = 0;
 	        	var averageHeartrate = 0;
-		        var retryHeartrateCheck = true;
+		        var retryHeartrateCheck = false;
 
 	            if (!SAAgent.channelIds[0]) {
 	            	window.alert ("Invalid Channel ID");
@@ -99,6 +99,7 @@ connectionListener = {
 	            if (data === "Heart") {
 	            	requestedSensor = data;
 	            	window.webapis.motion.start("HRM", onchanged);
+	            	retryHeartrateCheck = true;
 	            	window.setTimeout(retryHeartrate, 300000);
 	            }
 	            else if (data === "Exercise") {
@@ -111,7 +112,7 @@ connectionListener = {
 	            }
 	            else if (data === "Retry") {
 	            	if (requestedSensor === "Heart") {
-	            		SASocket.sendData(SAAgent.channelIds[0], heartbeatBPM);
+	            		SASocket.sendData(SAAgent.channelIds[0], JSON.stringify(heartrateData));
 	            	} else if (requestedSensor === "Exercise") {
 	            		SASocket.sendData(SAAgent.channelIds[0], JSON.stringify(exerciseData));
 	            	} else if (requestedSensor === "Sleep") {
@@ -121,6 +122,9 @@ connectionListener = {
 	            else if (data === "Init") {
 	            	window.webapis.motion.start("HRM", onchanged);
 	            	tizen.humanactivitymonitor.getHumanActivityData("PEDOMETER", onsuccessCB, onerrorCB);
+	            }
+	            else if (data === "Reset") {
+	            	resetPedometer();
 	            }
 	            
 	            function onchanged (heartrateInfo) {
@@ -132,7 +136,11 @@ connectionListener = {
 		      	 				heartrateSendCounter ++;		      	 				
 		      	 			} else {
 		      	 				averageHeartrate = Math.trunc(averageHeartrate / 5);
-		      	 				SASocket.sendData(SAAgent.channelIds[0], averageHeartrate);
+		      	 				heartrateData = {
+		      	 					type: "Heart",
+		      	 					heartrate: averageHeartrate
+		      	 				};
+		      	 				SASocket.sendData(SAAgent.channelIds[0], JSON.stringify(heartrateData));
 		      	 				window.webapis.motion.stop("HRM");
 			      	 			tizen.humanactivitymonitor.stop("HRM");
 			      	 			heartrateSendCounter = 0;
@@ -150,7 +158,7 @@ connectionListener = {
       	 			tizen.humanactivitymonitor.stop("HRM");
       	 			
 	            	if (retryHeartrateCheck) {
-	            		if (heartrateSendCounter == 0) {
+	            		if (heartrateSendCounter === 0) {
 	            			retryHeartrateCheck = false;
 		            		window.webapis.motion.start("HRM", onchanged);
 		            		window.setTimeout(retryHeartrate, 600000);
@@ -161,7 +169,8 @@ connectionListener = {
 	            }
 	            
 	            function onsuccessCB(pedometerInfo) {
-	            	var exerciseData = {
+	            	exerciseData = {
+	            		type: "Exercise",
 	            		stepCount: pedometerInfo.cumulativeTotalStepCount,
 	            		calories: pedometerInfo.cumulativeCalorie,
 	            		frequency: pedometerInfo.walkingFrequency
@@ -170,24 +179,15 @@ connectionListener = {
        		 	}
 
        		 	function onerrorCB(error) {
+       		 		console.log (error);
        		 		SASocket.sendData(SAAgent.channelIds[0], "Error getting data from watch.");
        		 	}
-	            
-	            //tizen.humanactivitymonitor.start("PEDOMETER", onchangedCB);
-	            
-	            
-	            //newData = data + " :: " + new Date();
-
-	            /* Send new data to Consumer */
-	            //SASocket.sendData(SAAgent.channelIds[0], stepCount);
-	            //createHTML("Send massage:<br />" +
-	                        //newData);
 	        };
 
 	        SASocket.setDataReceiveListener(dataOnReceive);
 	    },
 	    onerror: function (errorCode) {
-
+	    	console.log (errorCode);
 	    }
 	};
 
@@ -203,7 +203,10 @@ function requestOnSuccess (agents) {
     SAAgent.setServiceConnectionListener(connectionListener);
 }
 
-
+function resetPedometer () {
+	tizen.humanactivitymonitor.stop("PEDOMETER");
+	tizen.humanactivitymonitor.start("PEDOMETER", onchangedCB);
+}
 
 function requestOnError (e) {
 	window.alert ("requestSAAgent Error " + "Error name : " + e.name + " " + "Error message : " + e.message);
@@ -215,6 +218,7 @@ function createSleepHandler () {
 	
 	function onchangedCB (sleepInfo) {
     	sleepData = {
+			type: "Sleep",
     		status: sleepInfo.status,
     		timestamp: sleepInfo.timestamp
     	};
