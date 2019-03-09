@@ -87,8 +87,8 @@ connectionListener = {
 
 	        dataOnReceive =  function dataOnReceive (channelId, data) {
 	        	var requestedSensor;
-	        	var heartrateSendCounter = 0;
-	        	var averageHeartrate = 0;
+	        	var heartrateSendCounter;
+	        	var averageHeartrate;
 		        var retryHeartrateCheck = false;
 
 	            if (!SAAgent.channelIds[0]) {
@@ -98,20 +98,28 @@ connectionListener = {
 	            
 	            if (data === "Heart") {
 	            	requestedSensor = data;
+	            	averageHeartrate = 0;
+	            	heartrateSendCounter = 0;
 	            	window.webapis.motion.start("HRM", onchanged);
 	            	retryHeartrateCheck = true;
 	            	window.setTimeout(retryHeartrate, 300000);
 	            }
 	            else if (data === "Exercise") {
+	            	window.webapis.motion.stop("HRM");
+             		tizen.humanactivitymonitor.stop("HRM");
 	            	tizen.humanactivitymonitor.getHumanActivityData("PEDOMETER", onsuccessCB, onerrorCB);
 	            	requestedSensor = data;
 	            }
 	            else if (data === "Sleep") {
-	            	requestedSensor = data;
+	            	window.webapis.motion.stop("HRM");
+             		tizen.humanactivitymonitor.stop("HRM");
 	            	SASocket.sendData(SAAgent.channelIds[0], JSON.stringify(sleepData));
+	            	requestedSensor = data;
 	            }
 	            else if (data === "Retry") {
 	            	if (requestedSensor === "Heart") {
+	            		window.webapis.motion.stop("HRM");
+	             		tizen.humanactivitymonitor.stop("HRM");
 	            		SASocket.sendData(SAAgent.channelIds[0], JSON.stringify(heartrateData));
 	            	} else if (requestedSensor === "Exercise") {
 	            		SASocket.sendData(SAAgent.channelIds[0], JSON.stringify(exerciseData));
@@ -131,11 +139,11 @@ connectionListener = {
             		heartbeatBPM = heartrateInfo.heartRate;
 		      	 	if (heartbeatBPM !== "undefined") {
 		      	 		if (heartbeatBPM > 0) {		      	 			
-		      	 			if (heartrateSendCounter < 5) {
+		      	 			if (heartrateSendCounter < 15) {
 		      	 				averageHeartrate += heartbeatBPM;
 		      	 				heartrateSendCounter ++;		      	 				
 		      	 			} else {
-		      	 				averageHeartrate = Math.trunc(averageHeartrate / 5);
+		      	 				averageHeartrate = Math.trunc(averageHeartrate / 15);
 		      	 				heartrateData = {
 		      	 					type: "Heart",
 		      	 					heartrate: averageHeartrate
