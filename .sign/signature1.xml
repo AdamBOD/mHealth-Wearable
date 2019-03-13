@@ -12,7 +12,7 @@
 </Reference>
 <Reference URI="author-signature.xml">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
-<DigestValue>RnMxJ6VUZLAGoOolyK4ZSu+zc0OpOf9atdaga3gBolY=</DigestValue>
+<DigestValue>BBjzKgC67eUn3FUsY9DK+Zs+TkSfviBR13iTzBKPEhQ=</DigestValue>
 </Reference>
 <Reference URI="config.xml">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
@@ -60,7 +60,7 @@
 </Reference>
 <Reference URI="js%2Fapp.js">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
-<DigestValue>ORUwjZxPiFLdogWrHZ9Dq+kE0VCswcP5DX1LMmjFiCM=</DigestValue>
+<DigestValue>ZkL5FIQuBmEiXivmCsLiKL3H7W+zu0XYEBcH62bFSx0=</DigestValue>
 </Reference>
 <Reference URI="js%2Fbootstrap.min.js">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
@@ -1131,11 +1131,11 @@
 </Reference>
 </SignedInfo>
 <SignatureValue>
-YrfIslHXWQOTnllHuNqrZkdJcK9789nMePIT87WnIVMBbrHhAdxPdk1+yb2uwR0Rov1chdBHBolI
-rFnXtfJYZciWCaCJ/G9U4I/DG1+SFNSDZvHYquXyMQdWxhg/oonj/MXIyYf9gMWhtQ6htXEJEz8H
-XR9vYFB66lqGS7Vy/3gGeVxGLUfhi3s6F8K4RxK5JZMxgw/zgjvLbXPNS2kAfN7U6kkKUMk/fM6o
-2Epn/Mq626JwmlJ6UZdDqxnlnPpgTU0N4vzM+tJPzR1uAtDaUiTe8AixBnUswRBXa2nrHkvcmujO
-/7DXT6dPH6Ew/Z73xp4Iw6RjvXU+nTAUzZ2FPQ==
+ArVM4gEt+dA0M2+wxa9JW1Qnk5DFJVa+lAZp+ZPx6DwmHJMIptAp5Z9YoMj66mJN9ko1CdyEL7iP
+/Rgli0AKRW97GgzCuaJnNGw8SMHHzY+7cth2wWqKMeJUklZn/BkvThdIVj+VCT5Ad76Sk8DEt/Uw
+bwUTFGbcRo9NPNWHEA3HQHYxvV+ZJ93iVs6C4Yx2GgF1myY0J5r6LbGygKX2YI464nthxW3uVm6J
+wOLvUJ/xxgnuZCbztoO+eAHDBVvx3p96+YfNq6QP5eKL9x9JPcydCPe+6LumB9NEpQx/HqYX5wZo
+dm0yDNG3/9meRvu9/GGzvrUj52B3WOOsKqT2dA==
 </SignatureValue>
 <KeyInfo>
 <X509Data>
