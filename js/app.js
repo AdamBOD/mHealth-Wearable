@@ -218,7 +218,7 @@ function createSleepHandler () {
     	sleepData = {
 			type: "Sleep",
     		status: sleepInfo.status,
-    		timestamp: sleepInfo.timestamp
+    		timestamp: new Date().getTime()
     	};
     }
 }
