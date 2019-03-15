@@ -130,9 +130,8 @@ connectionListener = {
 	            	tizen.humanactivitymonitor.getHumanActivityData("PEDOMETER", onsuccessCB, onerrorCB);
 	            }
 	            else if (data === "Reset") {
-	            	if (resetPedometer()) {
-	            		tizen.humanactivitymonitor.getHumanActivityData("PEDOMETER", onsuccessCB, onerrorCB);
-	            	}	            	
+	            	resetPedometer();
+	            	SASocket.sendData(SAAgent.channelIds[0], "ExerciseReset");
 	            }
 	            else if (data === "StopHeart") {
 	            	window.webapis.motion.stop("HRM");
@@ -203,7 +202,6 @@ function requestOnSuccess (agents) {
 function resetPedometer () {
 	tizen.humanactivitymonitor.stop("PEDOMETER");
 	tizen.humanactivitymonitor.start("PEDOMETER", onchangedCB);
-	return true;
 }
 
 function requestOnError (e) {
