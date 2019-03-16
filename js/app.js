@@ -151,6 +151,7 @@ connectionListener = {
 		      	 					type: "Heart",
 		      	 					heartrate: averageHeartrate
 		      	 				};
+		      	 				localStorage.setItem("Heartrate", averageHeartrate);
 		      	 				SASocket.sendData(SAAgent.channelIds[0], JSON.stringify(heartrateData));
 		      	 				window.webapis.motion.stop("HRM");
 			      	 			tizen.humanactivitymonitor.stop("HRM");

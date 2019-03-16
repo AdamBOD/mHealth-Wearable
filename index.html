@@ -44,34 +44,20 @@
   <script src="./js/jquery.min.js"></script>
   <script type="text/javascript" src="https://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
   <script>
-  		var heartbeatBPM = 0;
-      function onchangedCB (heartbeatInfo) {
-	    	heartbeatBPM = heartbeatInfo.heartRate
-	 	if (heartbeatBPM > 0) {
-	 		document.getElementById("heartbeatBPM").innerText = heartbeatBPM;
+  	var heartbeatBPM = 0;
+	 		
+      
+     $(document).ready(function(){
+     	heartbeatBPM = localStorage.getItem("Heartrate");
+     	if (heartbeatBPM != null && heartbeatBPM > 0) {
+	      	document.getElementById("heartbeatBPM").innerText = heartbeatBPM;
 	 		var heartAnimationDurationMultiplier = 1000 / (heartbeatBPM / 60);
 	 		document.querySelector(".ecgLine").style.animationDuration = heartAnimationDurationMultiplier + "ms";
-	 		
-	 		var URL = "https://mhealth-api-fyp.herokuapp.com/data";
-	             var healthDataSend = {
-                 userID: 200,
-                 heartbeat: heartbeatBPM,
-                 stepsTaken: 1200,
-                 caloriesBurned: 2200
-             };
-             $.post(URL, healthDataSend , (data, status) => {});
-             
-             window.webapis.motion.stop("HRM");
-             tizen.humanactivitymonitor.stop("HRM");
-       	} else if (heartbeatBPM < 0) {
-       		window.webapis.motion.stop("HRM");
-            tizen.humanactivitymonitor.stop("HRM");
-       	}
-      }
-      
-      $(document).ready(function(){
-      	//window.webapis.motion.start("HRM", onchangedCB);
-      });
+     	}
+     	else {
+     		document.getElementById("heartbeatBPM").innerText = "No data";
+     	}    	
+     });
   </script>
 
 </body>

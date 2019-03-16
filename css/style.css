@@ -18,61 +18,8 @@
     width: 100%;
 }
 
-.carouselContainer {
-    margin: auto;
-    width: 100%;
-    height: 100%;
-    margin: unset !important;
-}
-
-.carouselItem {
-    min-height: 350px !important;
-    max-height: 350px !important;
-    min-width: 350px !important;
-    max-width: 350px !important;
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-}
-
-.carouselItemContainer {
-    width: 80%;
-    height: 300px !important;
-    margin: auto;
-    font-size: 20px;
-}
-
-.carouselItemContainer p {
-    text-align: center;
-}
-
-.carouselDots {
-    color: aliceblue;
-    position: absolute;
-    bottom: 30px;
-    left: 145px;
-    width: auto;
-    height: 25px;
-    display: flex;
-}
-
-.carouselDots li {
-    height: 15px;
-    margin: 7.5px;
-}
-
-.carouselDots li button {
-    width: 5px;
-    height: 14px;
-    border-radius: 50%;
-    border: none;
-    font-size: 0;
-    background-color: #a7a7a7;
-}
-
-.carouselDots li.slick-active button {
-    background-color: #ffffff;
+.ui-scroller {
+	display: none !important;
 }
 
 .ecgSVG {
