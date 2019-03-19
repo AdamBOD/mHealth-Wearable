@@ -156,6 +156,9 @@ connectionListener = {
 		      	 				window.webapis.motion.stop("HRM");
 			      	 			tizen.humanactivitymonitor.stop("HRM");
 			      	 			heartrateSendCounter = 0;
+			      	 			document.getElementById("heartbeatBPM").innerText = averageHeartrate;
+			      		 		var heartAnimationDurationMultiplier = 1000 / (averageHeartrate / 60);
+			      		 		document.querySelector(".ecgLine").style.animationDuration = heartAnimationDurationMultiplier + "ms";
 		      	 			}
 		      	 		} else if (heartbeatBPM < 0) {
 		      	 			window.webapis.motion.stop("HRM");
